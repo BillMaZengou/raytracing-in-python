@@ -43,9 +43,14 @@ class vec3d(object):
         return vec3d(x, y, z)
 
     def __mul__(self, factor):
+        assert not isinstance(factor, vec3d)
         return vec3d(self.x*factor, self.y*factor, self.z*factor)
 
+    def __rmul__(self, factor):
+        return self.__mul__(factor)
+
     def __truediv__(self, factor):
+        assert not isinstance(factor, vec3d)
         return vec3d(self.x/factor, self.y/factor, self.z/factor)
 
 def main():
