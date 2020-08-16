@@ -1,0 +1,9 @@
+# This is a comment
+# Next line says "P3" defining the image format,
+# then the number of column and rows
+P3 3 2
+#Finally the maximum color value and RGB triplets
+255
+255 0 0		0 255 0		0 0 255
+255 255 0 	255 255 255 	0 0 0
+# Fin! This becomes the image.
