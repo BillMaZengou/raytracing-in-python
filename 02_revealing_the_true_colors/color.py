@@ -7,20 +7,9 @@ class color(vec3d):
     """docstring for color."""
 
     def __init__(self, r, g, b):
-        if r > 255:
-            r = 255
-        elif r < 0:
-            r = 0
-
-        if g > 255:
-            g = 255
-        elif g < 0:
-            g = 0
-
-        if b > 255:
-            b = 255
-        elif b < 0:
-            b = 0
+        r = max(min(r, 255), 0)
+        g = max(min(g, 255), 0)
+        b = max(min(b, 255), 0)
         vec3d.__init__(self, r, g, b)
 
     def show(self):
@@ -51,11 +40,7 @@ class image(object):
         super(image, self).__init__()
         self.width = width
         self.height = height
-        self.color_vec_mat = []
-        for i in range(self.height):
-            self.color_vec_mat.append([])
-            for j in range(self.width):
-                self.color_vec_mat[i].append([])
+        self.color_vec_mat = [[None for _ in range(self.width)] for _ in range(self.height)]
 
     def addColor(self, color_vec):
         if self.color_vec_mat[self.height-1][self.width-1] != []:
@@ -71,29 +56,34 @@ class image(object):
                 if ifBreak:
                     break
 
-    def saveImage(self):
-        with open("result.ppm", "w") as f:
+    def setColor(self, color_vec, x, y):
+        self.color_vec_mat[y][x] = color_vec
+
+    def saveImage(self, file_name):
+        with open(file_name, "w") as f:
             f.write("P3\t{}\t{}\n".format(self.width, self.height))
             f.write("255\n")
             for i in range(self.height):
                 for j in range(self.width):
                     color_vec = self.color_vec_mat[i][j]
-                    f.write("{}\t{}\t{}\t".format(color_vec.x, color_vec.y, color_vec.z))
+                    f.write("{}\t{}\t{}\t".format(int(color_vec.x), int(color_vec.y), int(color_vec.z)))
                 f.write("\n")
             print("Done")
 
 def main():
     import random
     random.seed(2)
-    i2 = image(4, 5)
+    WIDTH = 4
+    HEIGHT = 5
+    i2 = image(WIDTH, HEIGHT)
     c = []
-    for i in range(20):
+    for i in range(WIDTH*HEIGHT):
         c.append(color(random.randint(0, 255), random.randint(0, 255) ,random.randint(0, 255)))
 
     # print(c)
     for pix in c:
         i2.addColor(pix)
-    i2.saveImage()
+    i2.saveImage("result.ppm")
 
 if __name__ == '__main__':
     main()
