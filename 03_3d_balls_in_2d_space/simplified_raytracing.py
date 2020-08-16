@@ -7,23 +7,6 @@ LIB_PATH = '../02_revealing_the_true_colors'
 sys.path.append(LIB_PATH)
 from color import *
 
-WIDTH = 320
-HEIGHT = 200
-
-def aspect(width, height):
-    return width/height
-
-AspectRatio = aspect(WIDTH, HEIGHT)
-xMax = 1
-xMin = -xMax
-yMax = xMax/AspectRatio
-yMin = -yMax
-
-camera_pos = vec3d(0, 0, -1)
-ball_pos = vec3d(0, 0, 0)
-ball_r = 0.5
-ball_col = color(255, 0, 0)
-
 class Ball(object):
     """docstring for Ball."""
     def __init__(self, origin, radius, col):
@@ -91,33 +74,84 @@ class RayTracer(object):
     def getHit(self):
         return self.hit
 
-ball1 = Ball(ball_pos, ball_r, ball_col)
-image_plane = Plane(ball1.origin, xMin, xMax, yMin, yMax, WIDTH, HEIGHT)
-ray_tracing = RayTracer(camera_pos, ball1, image_plane)
-# ray_tracing.camera.show()
-# ray_tracing.view_plane.centre.show()
-# ray_tracing.ray_direction(0, 0)
-# ray_tracing.ray_direction(160, 100)
-# ray_tracing.ray.show()
-# ray_tracing.sphere_to_ray()
-# # ray_tracing.target_to_camera.show()
-# ray_tracing.ray_sphere_intersection()
-# print(ray_tracing.dist)
-# position = ray_tracing.hit_pos()
-# position.show()
+def aspect(width, height):
+    return width/height
 
-IMG = image(WIDTH, HEIGHT)
-for j in range(HEIGHT):
-    for i in range(WIDTH):
-        ray_tracing.ray_direction(i, j)
-        ray_tracing.sphere_to_ray()
-        ray_tracing.ray_sphere_intersection()
-        ray_tracing.hit_pos()
-        single_point = ray_tracing.getHit()
-        if single_point is not None:
-            color_point = ball1.getColor(single_point)
-        else:
-            color_point = color(0, 0, 0)
-        IMG.setColor(color_point, i, j)
+def main():
+    WIDTH = 320
+    HEIGHT = 200
 
-IMG.saveImage("ball.ppm")
+    AspectRatio = aspect(WIDTH, HEIGHT)
+    xMax = 1
+    xMin = -xMax
+    yMax = xMax/AspectRatio
+    yMin = -yMax
+
+    camera_pos = vec3d(0, 0, -1)
+    ball_pos = vec3d(0, 0, 0)
+    ball_r = 0.1
+    red = color(255, 0, 0)
+    yello = color(255, 255, 0)
+    green = color(0, 255, 0)
+
+    ball1 = Ball(ball_pos+vec3d(0, 0.3, 0), ball_r, red)
+    ball2 = Ball(ball_pos, ball_r, yello)
+    ball3 = Ball(ball_pos-vec3d(0, 0.3, 0), ball_r, green)
+
+    image_plane = Plane(ball_pos, xMin, xMax, yMin, yMax, WIDTH, HEIGHT)
+    ray_tracing1 = RayTracer(camera_pos, ball1, image_plane)
+    ray_tracing2 = RayTracer(camera_pos, ball2, image_plane)
+    ray_tracing3 = RayTracer(camera_pos, ball3, image_plane)
+
+    IMG = image(WIDTH, HEIGHT)
+    for j in range(HEIGHT):
+        for i in range(WIDTH):
+            single_point = None
+            ray_tracing1.ray_direction(i, j)
+            ray_tracing1.sphere_to_ray()
+            ray_tracing1.ray_sphere_intersection()
+            ray_tracing1.hit_pos()
+            single_point1 = ray_tracing1.getHit()
+            ray_tracing2.ray_direction(i, j)
+            ray_tracing2.sphere_to_ray()
+            ray_tracing2.ray_sphere_intersection()
+            ray_tracing2.hit_pos()
+            single_point2 = ray_tracing2.getHit()
+            ray_tracing3.ray_direction(i, j)
+            ray_tracing3.sphere_to_ray()
+            ray_tracing3.ray_sphere_intersection()
+            ray_tracing3.hit_pos()
+            single_point3 = ray_tracing3.getHit()
+
+            if single_point is not None:
+                if single_point1 is not None:
+                    single_point = single_point1
+                if single_point2 is not None:
+                    if single_point.get_norm() > single_point2.get_norm():
+                        single_point = single_point2
+                if single_point3 is not None:
+                    if single_point.get_norm() > single_point3.get_norm():
+                        single_point = single_point3
+            else:
+                if single_point1 is not None:
+                    single_point = single_point1
+                if single_point2 is not None:
+                    single_point = single_point2
+                if single_point3 is not None:
+                    single_point = single_point3
+
+            if single_point is not None:
+                if single_point == single_point1:
+                    color_point = ball1.getColor(single_point)
+                elif single_point == single_point2:
+                    color_point = ball2.getColor(single_point)
+                if single_point == single_point3:
+                    color_point = ball3.getColor(single_point)
+            else:
+                color_point = color(0, 0, 0)
+            IMG.setColor(color_point, i, j)
+
+    IMG.saveImage("ball.ppm")
+
+if __name__ == '__main__':
+    main()
