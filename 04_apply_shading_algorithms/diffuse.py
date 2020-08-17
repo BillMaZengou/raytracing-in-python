@@ -38,6 +38,7 @@ class Ball(object):
     def getColor(self, hit_point, light_direction):
         normal_vec = hit_point - self.origin
         normal_vec /= normal_vec.get_norm()
+        """Lambertian reflectance"""
         color_vec = abs(light_direction.dot(normal_vec))*self.material.diffusion*self.col
         return color_vec
 
