@@ -59,6 +59,9 @@ class image(object):
     def setColor(self, color_vec, x, y):
         self.color_vec_mat[y][x] = color_vec
 
+    def getValue(self, x, y):
+        return self.color_vec_mat[y][x]
+
     def saveImage(self, file_name):
         with open(file_name, "w") as f:
             f.write("P3\t{}\t{}\n".format(self.width, self.height))
