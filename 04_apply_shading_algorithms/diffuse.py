@@ -36,7 +36,7 @@ class Ball(object):
         self.col = col
         self.material = material
 
-    def getColor(self, camera_pos, hit_point, light_direction, M=None, k=None):
+    def getColor(self, camera_pos, hit_point, light_direction, k_a=(1/6), k_d=(1/3), k_s=(1/2)):
         normal_vec = hit_point - self.origin
         normal_vec /= normal_vec.get_norm()
         L = light_direction  # Light ray vector from object
@@ -48,18 +48,13 @@ class Ball(object):
         """Ambient Light"""
         ambient_vec = self.material.ambient*C
         """Diffusion Light: Lambertian reflectance"""
-        if M == None:
-            M = self.material.diffusion
+        M = self.material.diffusion
         diffuse_vec = abs(L.dot(N))*M*C
         """Specular Light: Blinn-Phong reflection model"""
-        if k == None:
-            k = self.material.specular
+        k = self.material.specular
         H = L + V
         H /= H.get_norm()  # half-angle between view and light direction
         specular_vec = abs(H.dot(R)**k)*C  # Phong model uses V; BP model uses H
-        k_a = 1/3
-        k_d = 1/2
-        k_s = 1/6
         color_vec = k_a*ambient_vec + k_d*diffuse_vec + k_s*specular_vec
         color_vec.toInteger()
         return color_vec
@@ -105,7 +100,7 @@ def main():
 
             if single_point is not None:
                 if single_point == single_point1:
-                    color_point = ball1.getColor(camera_pos, single_point, point_light.direction, M=None, k=None)
+                    color_point = ball1.getColor(camera_pos, single_point, point_light.direction, k_a=(1/3), k_d=(1/2), k_s=(1/6))
             else:
                 color_point = color(0, 0, 0)
             IMG.setColor(color_point, i, j)

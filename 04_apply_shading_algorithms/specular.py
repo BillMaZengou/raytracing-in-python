@@ -60,7 +60,7 @@ class Stage(object):
                     self.ray_tracer[k].hit_pos()
                     hit_point = self.ray_tracer[k].getHit()
                     if local_depth is not None and hit_point.z == local_depth.z:
-                        color_point = self.objects[k].getColor(self.camera.getPos(), hit_point, self.lights.direction, M=None, k=None)
+                        color_point = self.objects[k].getColor(self.camera.getPos(), hit_point, self.lights.direction, k_a=(1/12), k_d=(1/3), k_s=(7/12))
                     else:
                         color_point = color(0, 0, 0)
                 final_image.setColor(color_point, i, j)
@@ -120,8 +120,8 @@ def main():
     balls = [ball1]
 
     """Lights"""
-    lightSource = vec3d(5, 5, -1/2)
-    lightDirection = vec3d(-1, -1, 1).get_unit_vec()
+    lightSource = vec3d(5, 5, -3)
+    lightDirection = vec3d(1, 1, -1).get_unit_vec()
     point_light = Light(lightSource, lightDirection)
 
     """Set Up Stage"""
