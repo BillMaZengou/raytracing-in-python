@@ -59,9 +59,8 @@ class Stage(object):
                     self.ray_tracer[k].ray_sphere_intersection()
                     self.ray_tracer[k].hit_pos()
                     hit_point = self.ray_tracer[k].getHit()
-                    # print((local_depth is not None)==(hit_point == local_depth))
                     if local_depth is not None and hit_point.z == local_depth.z:
-                        color_point = self.objects[k].getColor(hit_point, self.lights.direction, M=0)
+                        color_point = self.objects[k].getColor(self.camera.getPos(), hit_point, self.lights.direction, M=None, k=None)
                     else:
                         color_point = color(0, 0, 0)
                 final_image.setColor(color_point, i, j)
@@ -116,7 +115,7 @@ def main():
     """Objects"""
     ball_pos = vec3d(0, 0, 0)
     ball_r = 0.5
-    ball_material = Material(0.9, 0.1)
+    ball_material = Material(0.3, 0.9, 5)
     ball1 = Ball(ball_pos, ball_r, red, ball_material)
     balls = [ball1]
 

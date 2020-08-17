@@ -14,6 +14,11 @@ class vec3d(object):
     def show(self):
         print("The vector is {}".format((self.x, self.y, self.z)))
 
+    def toInteger(self):
+        self.x = int(self.x)
+        self.y = int(self.y)
+        self.z = int(self.z)
+
     def get_norm(self):
         return self.magnitude
 

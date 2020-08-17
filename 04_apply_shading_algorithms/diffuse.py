@@ -13,8 +13,9 @@ from simplified_raytracing import *
 class Material(object):
     """docstring for Material."""
 
-    def __init__(self, diffusion, specular):
+    def __init__(self, ambient, diffusion, specular):
         super(Material, self).__init__()
+        self.ambient = ambient
         self.diffusion = diffusion
         self.specular = specular
 
@@ -45,22 +46,22 @@ class Ball(object):
         R = 2*(N.dot(L))*N - L  # Reflection vector
 
         """Ambient Light"""
-        ambient_vec = C
+        ambient_vec = self.material.ambient*C
         """Diffusion Light: Lambertian reflectance"""
         if M == None:
             M = self.material.diffusion
-            diffuse_vec = abs(L.dot(N))*M*C
-        else:
-            diffuse_vec = vec3d(0, 0, 0)
+        diffuse_vec = abs(L.dot(N))*M*C
         """Specular Light: Blinn-Phong reflection model"""
         if k == None:
             k = self.material.specular
-            H = L + V
-            H /= H.get_norm()  # half-angle between view and light direction
-            specular_vec = abs(H.dot(R)**k)*C  # Phong model uses V; BP model uses H
-        else:
-            specular_vec = vec3d(0, 0, 0)
-        color_vec = ambient_vec + diffuse_vec + specular_vec
+        H = L + V
+        H /= H.get_norm()  # half-angle between view and light direction
+        specular_vec = abs(H.dot(R)**k)*C  # Phong model uses V; BP model uses H
+        k_a = 1/3
+        k_d = 1/2
+        k_s = 1/6
+        color_vec = k_a*ambient_vec + k_d*diffuse_vec + k_s*specular_vec
+        color_vec.toInteger()
         return color_vec
 
 def main():
@@ -76,7 +77,7 @@ def main():
     camera_pos = vec3d(0, 0, -1)
     ball_pos = vec3d(0, 0, 0)
     ball_r = 0.5
-    ball_material = Material(1.2, 0.1)
+    ball_material = Material(0.2, 0.9, 10)
 
     point_light = Light(vec3d(5, 5, -1/2), vec3d(-1, -1, 1).get_unit_vec())
 
@@ -104,11 +105,10 @@ def main():
 
             if single_point is not None:
                 if single_point == single_point1:
-                    color_point = ball1.getColor(camera_pos, single_point, point_light.direction, M=None, k=0)
+                    color_point = ball1.getColor(camera_pos, single_point, point_light.direction, M=None, k=None)
             else:
                 color_point = color(0, 0, 0)
             IMG.setColor(color_point, i, j)
-
     IMG.saveImage("ball.ppm")
 
 if __name__ == '__main__':
