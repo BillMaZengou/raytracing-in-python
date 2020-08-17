@@ -35,11 +35,32 @@ class Ball(object):
         self.col = col
         self.material = material
 
-    def getColor(self, hit_point, light_direction):
+    def getColor(self, camera_pos, hit_point, light_direction, M=None, k=None):
         normal_vec = hit_point - self.origin
         normal_vec /= normal_vec.get_norm()
-        """Lambertian reflectance"""
-        color_vec = abs(light_direction.dot(normal_vec))*self.material.diffusion*self.col
+        L = light_direction  # Light ray vector from object
+        V = hit_point - camera_pos  # viewing direction
+        N = normal_vec  # Normal to the surface
+        C = self.col  # color at that position
+        R = 2*(N.dot(L))*N - L  # Reflection vector
+
+        """Ambient Light"""
+        ambient_vec = C
+        """Diffusion Light: Lambertian reflectance"""
+        if M == None:
+            M = self.material.diffusion
+            diffuse_vec = abs(L.dot(N))*M*C
+        else:
+            diffuse_vec = vec3d(0, 0, 0)
+        """Specular Light: Blinn-Phong reflection model"""
+        if k == None:
+            k = self.material.specular
+            H = L + V
+            H /= H.get_norm()  # half-angle between view and light direction
+            specular_vec = abs(H.dot(R)**k)*C  # Phong model uses V; BP model uses H
+        else:
+            specular_vec = vec3d(0, 0, 0)
+        color_vec = ambient_vec + diffuse_vec + specular_vec
         return color_vec
 
 def main():
@@ -55,7 +76,7 @@ def main():
     camera_pos = vec3d(0, 0, -1)
     ball_pos = vec3d(0, 0, 0)
     ball_r = 0.5
-    ball_material = Material(0.9, 0.1)
+    ball_material = Material(1.2, 0.1)
 
     point_light = Light(vec3d(5, 5, -1/2), vec3d(-1, -1, 1).get_unit_vec())
 
@@ -83,7 +104,7 @@ def main():
 
             if single_point is not None:
                 if single_point == single_point1:
-                    color_point = ball1.getColor(single_point, point_light.direction)
+                    color_point = ball1.getColor(camera_pos, single_point, point_light.direction, M=None, k=0)
             else:
                 color_point = color(0, 0, 0)
             IMG.setColor(color_point, i, j)

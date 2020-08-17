@@ -61,7 +61,7 @@ class Stage(object):
                     hit_point = self.ray_tracer[k].getHit()
                     # print((local_depth is not None)==(hit_point == local_depth))
                     if local_depth is not None and hit_point.z == local_depth.z:
-                        color_point = self.objects[k].getColor(hit_point, self.lights.direction)
+                        color_point = self.objects[k].getColor(hit_point, self.lights.direction, M=0)
                     else:
                         color_point = color(0, 0, 0)
                 final_image.setColor(color_point, i, j)
